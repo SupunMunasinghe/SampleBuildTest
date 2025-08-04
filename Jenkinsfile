@@ -13,11 +13,15 @@ pipeline {
                     url: 'git@github.com:SupunMunasinghe/SampleBuildTest.git'
             }
         }
-        stage('Configure') {
+        stage('Checkout') {
             steps {
-                sh """
-                    cmake -S . -B build -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
-                """
+                checkout([$class: 'GitSCM',
+                    branches: [[name: "*/${params.BRANCH_NAME}"]],
+                    userRemoteConfigs: [[
+                        url: 'git@github.com:YourUser/YourRepo.git',
+                        credentialsId: 'your-ssh-key-id'
+                    ]]
+                ])
             }
         }
         stage('Build') {
