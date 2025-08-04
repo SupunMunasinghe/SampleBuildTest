@@ -1,0 +1,28 @@
+name: Trigger Local Jenkins Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: self-hosted   # Runs on Jenkins server
+    steps:
+      - name: Trigger Jenkins Job
+        run: |
+          echo "Triggering Jenkins job from GitHub Actions..."
+          curl -X POST "http://localhost:8080/job/CMake_Build/buildWithParameters?token=MY_SECRET_TOKEN&BRANCH_NAME=${GITHUB_REF_NAME}&BUILD_TYPE=Release"
+
+      - name: Wait for Jenkins job to complete
+        run: |
+          echo "Waiting for Jenkins job to complete..."
+          sleep 60
+          # Optional: poll Jenkins API for status
+
+      - name: Notify GitHub PR (optional)
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          echo "Posting build status to PR..."
+          # You can use GitHub CLI or API here to comment on PR
