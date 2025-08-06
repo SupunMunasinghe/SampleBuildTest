@@ -13,7 +13,9 @@ jobs:
       - name: Trigger Jenkins Job
         run: |
           echo "Triggering Jenkins job from GitHub Actions..."
-          curl -X POST "http://localhost:8080/job/CMake_Build/buildWithParameters?token=MY_SECRET_TOKEN&BRANCH_NAME=${GITHUB_REF_NAME}&BUILD_TYPE=Release"
+          curl -X POST "http://localhost:8080/job/CMake_Build/buildWithParameters?BRANCH_NAME=${GITHUB_REF_NAME} --user exvbuild:${{ secrets.JENKINS_ACCESS_TOKEN }}"
+        env:
+            JENKINS_TOKEN: ${{ secrets.JENKINS_ACCESS_TOKEN }}
 
       - name: Wait for Jenkins job to complete
         run: |
