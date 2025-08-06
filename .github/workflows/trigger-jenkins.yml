@@ -11,17 +11,21 @@ jobs:
     runs-on: self-hosted   # Runs on Jenkins server
     steps:
       - name: Trigger Jenkins Job
+        env:
+            JENKINS_TOKEN: ${{ secrets.JENKINS_ACCESS_TOKEN }}
+            JENKINS_URL: http://localhost:8080
+            JENKINS_USERNAME: exvbuild
+            JENKINS_JOB_NAME: CMake_Build
         run: |
           echo "Triggering Jenkins job from GitHub Actions..."
           echo "Branch Name"
           echo ${GITHUB_REF_NAME}
           echo "Jenkins Token"
           echo ${{ secrets.JENKINS_ACCESS_TOKEN }}
-          curl --request POST \
-          --url http://localhost:8080/job/CMake_Build/buildWithParameters?BRANCH_NAME=${GITHUB_REF_NAME}\
-          --user exvbuild:11eaa6dd4392d6861528b28c54e0ddd91d
-        env:
-            JENKINS_TOKEN: ${{ secrets.JENKINS_ACCESS_TOKEN }}
+          curl -X POST \
+          "${JENKINS_URL}/job/${JENKINS_JOB_NAME}/buildWithParameters?BRANCH_NAME=${GITHUB_REF_NAME}" \
+          --user "${JENKINS_USERNAME}:${JENKINS_TOKEN}"
+        
             
 
       - name: Wait for Jenkins job to complete
