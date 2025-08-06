@@ -19,10 +19,9 @@ jobs:
         run: |
           echo "Triggering Jenkins job from GitHub Actions..."
 
-          BUILD_URL=$(curl -s -X POST \
+          BUILD_URL=$(curl -X POST \
           "${JENKINS_URL}/job/${JENKINS_JOB_NAME}/buildWithParameters?BRANCH_NAME=${GITHUB_REF_NAME}" \
-          --user "${JENKINS_USERNAME}:${JENKINS_TOKEN}"\
-          -i | grep "Location:" | awk '{print $2}' | tr -d '\r\n')
+          --user "${JENKINS_USERNAME}:${JENKINS_TOKEN}")
           echo "Build triggered at $BUILD_URL"
           echo "build_url=$BUILD_URL" >> $GITHUB_OUTPUT
         
