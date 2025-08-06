@@ -19,7 +19,7 @@ jobs:
           echo ${{ secrets.JENKINS_ACCESS_TOKEN }}
           curl --request POST \
           --url http://localhost:8080/job/CMake_Build/buildWithParameters?BRANCH_NAME=${GITHUB_REF_NAME}\
-          --user exvbuild:${{ secrets.JENKINS_ACCESS_TOKEN }}
+          --user exvbuild:11eaa6dd4392d6861528b28c54e0ddd91d
         env:
             JENKINS_TOKEN: ${{ secrets.JENKINS_ACCESS_TOKEN }}
             
