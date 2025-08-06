@@ -35,20 +35,20 @@ jobs:
       - name: Wait for Jenkins job to complete
         run: |
           echo "Waiting for Jenkins job to complete..."
-          while true; do
+          
           BUILD_INFO=$(curl -s -u ${JENKINS_USERNAME}:${JENKINS_TOKEN} \
             "${{ steps.trigger.outputs.build_url }}api/json")
 
           BUILDING=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['building'])" "$BUILD_INFO")
           RESULT=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['result'])" "$BUILD_INFO")
-
-          if [[ "$BUILDING" == "false" ]]; then
-            echo "Build finished with result: $RESULT"
-            echo "result=$RESULT" >> $GITHUB_OUTPUT
-            break
-          fi
-          echo "Still building..."
-          sleep 5
+          do
+            if [[ "$BUILDING" == "false" ]]; then
+              echo "Build finished with result: $RESULT"
+              echo "result=$RESULT" >> $GITHUB_OUTPUT
+              break
+            fi
+              echo "Still building..."
+            sleep 5
           done
 
       - name: Notify GitHub PR (optional)
