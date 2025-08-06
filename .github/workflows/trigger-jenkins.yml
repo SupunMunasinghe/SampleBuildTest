@@ -39,8 +39,13 @@ jobs:
           BUILD_INFO=$(curl -s -u ${JENKINS_USERNAME}:${JENKINS_TOKEN} \
             "${{ steps.trigger.outputs.build_url }}api/json")
 
+          echo "Build Info : $BUILD_INFO"
+
           BUILDING=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['building'])" "$BUILD_INFO")
           RESULT=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['result'])" "$BUILD_INFO")
+
+          echo "Building : $BUILDING"
+          echo "Build Result : $RESULT"
           do
             if [[ "$BUILDING" == "false" ]]; then
               echo "Build finished with result: $RESULT"
