@@ -13,6 +13,10 @@ jobs:
       - name: Trigger Jenkins Job
         run: |
           echo "Triggering Jenkins job from GitHub Actions..."
+          echo "Branch Name"
+          echo ${GITHUB_REF_NAME}
+          echo "Jenkins Token"
+          echo ${{ secrets.JENKINS_ACCESS_TOKEN }}
           curl --request POST \
           --url http://localhost:8080/job/CMake_Build/buildWithParameters?BRANCH_NAME=${GITHUB_REF_NAME}\
           --user exvbuild:${{ secrets.JENKINS_ACCESS_TOKEN }}
