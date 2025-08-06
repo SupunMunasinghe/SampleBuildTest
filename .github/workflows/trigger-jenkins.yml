@@ -46,6 +46,7 @@ jobs:
             echo "Build finished with result: $RESULT"
             echo "result=$RESULT" >> $GITHUB_OUTPUT
             break
+          fi
           echo "Still building..."
           sleep 5
           done
