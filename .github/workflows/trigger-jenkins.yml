@@ -18,13 +18,13 @@ jobs:
             JENKINS_JOB_NAME: CMake_Build
         run: |
           echo "Triggering Jenkins job from GitHub Actions..."
-          echo "Branch Name"
-          echo ${GITHUB_REF_NAME}
-          echo "Jenkins Token"
-          echo ${{ secrets.JENKINS_ACCESS_TOKEN }}
-          curl -X POST \
+
+          BUILD_URL=$(curl -s -X POST \
           "${JENKINS_URL}/job/${JENKINS_JOB_NAME}/buildWithParameters?BRANCH_NAME=${GITHUB_REF_NAME}" \
-          --user "${JENKINS_USERNAME}:${JENKINS_TOKEN}"
+          --user "${JENKINS_USERNAME}:${JENKINS_TOKEN}"\
+          -i | grep "Location:" | awk '{print $2}' | tr -d '\r\n')
+          echo "Build triggered at $BUILD_URL"
+          echo "build_url=$BUILD_URL" >> $GITHUB_OUTPUT
         
             
 
