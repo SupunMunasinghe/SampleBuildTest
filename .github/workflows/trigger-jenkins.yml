@@ -13,9 +13,6 @@ jobs:
       - name: Trigger Jenkins Job
         run: |
           echo "Triggering Jenkins job from GitHub Actions..."
-          CRUMB=$(curl -s -u exvbuild:${{ secrets.JENKINS_ACCESS_TOKEN }} http://localhost:8080/crumbIssuer/api/xml?xpath=concat\(//crumbRequestField,%22:%22,//crumb\))
-          echo "Crumb Value"
-          echo "$CRUMB"
           curl --request POST \
           --url http://localhost:8080/job/CMake_Build/buildWithParameters?BRANCH_NAME=${GITHUB_REF_NAME}\
           --user exvbuild:${{ secrets.JENKINS_ACCESS_TOKEN }}
