@@ -52,9 +52,8 @@ jobs:
             echo "Next Build Build Info : $BUILD_INFO"
 
             NEXT_BUILD=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['nextBuild'])" "$BUILD_INFO")
-            echo "Next Build $NEXT_BUILD"
 
-            if [[ "$NEXT_BUILD" == null ]]; then
+            if [[ "$NEXT_BUILD" == None ]]; then
               echo "Next build is loading..."
             else
               echo "Next build has opened : $NEXT_BUILD"
