@@ -46,7 +46,7 @@ jobs:
           
           while true; do
             BUILD_INFO=$(curl -s -u ${JENKINS_USERNAME}:${JENKINS_TOKEN} \
-            "${$LATEST_BUILD_URL}api/json")
+            "${LATEST_BUILD_URL}api/json")
 
             STATUS=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['result'])" "$BUILD_INFO")
             BUILDING=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['building'])" "$BUILD_INFO")
