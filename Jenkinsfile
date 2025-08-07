@@ -3,32 +3,40 @@ pipeline {
 
     parameters {
         string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Branch to build')
-        choice(name: 'BUILD_TYPE', choices: ['Release', 'Debug'], description: 'CMake build type')
+    }
+    environment {
+        BUILD_DIR_DEBUG = "build"
+        BUILD_DIR_RELEASE = "build-release"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: params.BRANCH_NAME,
-                    url: 'git@github.com:SupunMunasinghe/SampleBuildTest.git'
+                echo "Building branch ${params.BRANCH_NAME}"
+                git branch: "${params.BRANCH_NAME}", credentialsId: 'github-ssh-key-2', url: 'https://github.com/SupunMunasinghe/SampleBuildTest.git'
             }
         }
-        stage('Checkout') {
+        
+        stage('Build Debug') {
             steps {
-                checkout([$class: 'GitSCM',
-                    branches: [[name: "*/${params.BRANCH_NAME}"]],
-                    userRemoteConfigs: [[
-                        url: 'git@github.com:YourUser/YourRepo.git',
-                        credentialsId: 'your-ssh-key-id'
-                    ]]
-                ])
+                echo "Building branch ${params.BRANCH_NAME}"
+                sh '''
+                    mkdir -p ${BUILD_DIR_DEBUG}
+                    cd ${BUILD_DIR_DEBUG}
+                    cmake -DCMAKE_BUILD_TYPE=Debug ..
+                    make -j$(nproc)
+                '''
             }
         }
-        stage('Build') {
+        
+        stage('Build Release') {
             steps {
-                sh """
-                    cmake --build build --config ${BUILD_TYPE}
-                """
+                sh '''
+                    mkdir -p ${BUILD_DIR_RELEASE}
+                    cd ${BUILD_DIR_RELEASE}
+                    cmake -DCMAKE_BUILD_TYPE=Release ..
+                    make -j$(nproc)
+                '''
             }
         }
         
