@@ -21,9 +21,10 @@ jobs:
         
         run: |
           echo "Triggering Jenkins job from GitHub Actions..."
+          echo "Call jenkins Request : ${{ github.head_ref }}"
 
           curl -X POST \
-          "${JENKINS_URL}/job/${JENKINS_JOB_NAME}/buildWithParameters?BRANCH_NAME=${GITHUB_REF_NAME}" \
+          "${JENKINS_URL}/job/${JENKINS_JOB_NAME}/buildWithParameters?BRANCH_NAME=${{ github.head_ref }}" \
           --user "${JENKINS_USERNAME}:${JENKINS_TOKEN}"
           LATEST_BUILD=$(curl -u ${JENKINS_USERNAME}:${JENKINS_TOKEN} "${JENKINS_URL}/job/${JENKINS_JOB_NAME}/api/json")
           LATEST_BUILD_URL=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['lastBuild']['url'])" "$LATEST_BUILD")
