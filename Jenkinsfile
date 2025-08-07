@@ -9,7 +9,23 @@ pipeline {
         BUILD_DIR_RELEASE = "build-release"
     }
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
     stages {
+        stage('Branch Filter') {
+        when {
+            expression {
+            // Skip branches that are not PRs or main
+                return env.BRANCH_NAME == "main" || env.CHANGE_ID != null
+                }
+            }
+            steps {
+                echo "Proceeding with build on branch: ${env.BRANCH_NAME}"
+            }
+        }
+
         stage('Checkout') {
             steps {
                 echo "Building branch ${params.BRANCH_NAME}"
