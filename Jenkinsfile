@@ -9,8 +9,11 @@ pipeline {
         BUILD_DIR_RELEASE = "build-release"
     }
 
+    //Main Stages
     stages {
-        stage('Checkout in both Linux and Windows') {
+
+        //Checkout Branches in both Linux and Windows
+        stage('Checkout in both Linux and Windows in Parellel') {
             parallel {
                 stage('Checkout in Linux') {
                     agent { label 'linux' }
@@ -29,6 +32,7 @@ pipeline {
             }
         }
 
+        //Parallel build on both Windows and Linux
         stage('Parallel Builds') {
             parallel {
                 stage('Build on Linux') {
@@ -62,22 +66,34 @@ pipeline {
 
                 stage('Build on Windows') {
                     agent { label 'windows' }
-                    steps {
-                        bat '''
-                        echo Building on Windows...
-                        mkdir build\\windows
-                        cd build\\windows
-                        cmake ..\\.. -G "Visual Studio 16 2019" -A x64
-                        cmake --build . --config Release
-                        '''
+                    stages{
+                        stage('Build Debug'){
+                            steps {
+                                bat '''
+                                mkdir %BUILD_DIR_DEBUG%
+                                cd %BUILD_DIR_DEBUG%
+                                cmake .. -G "Visual Studio 16 2019" -A x64
+                                cmake --build . --config Debug
+                                '''
+                            }
                         }
+                        stage('Build Release'){
+                            steps {
+                                bat '''
+                                mkdir %BUILD_DIR_RELEASE%
+                                cd %BUILD_DIR_RELEASE%
+                                cmake .. -G "Visual Studio 16 2019" -A x64
+                                cmake --build . --config Release
+                                '''
+                            }
+                            
+                        }
+                    }
+                    
 
                     }
                 }
-        }
-        
-        
-        
+        }  
     }
     post {
         success {
