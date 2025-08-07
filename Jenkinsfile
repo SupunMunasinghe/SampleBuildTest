@@ -26,12 +26,12 @@ pipeline {
             }
         }
 
-        stage('Checkout') {
-            steps {
-                echo "Building branch ${params.BRANCH_NAME}"
-                git branch: "${params.BRANCH_NAME}", credentialsId: 'github-ssh-key-2', url: 'https://github.com/SupunMunasinghe/SampleBuildTest.git'
-            }
-        }
+        // stage('Checkout') {
+        //     steps {
+        //         echo "Building branch ${params.BRANCH_NAME}"
+        //         git branch: "${params.BRANCH_NAME}", credentialsId: 'github-ssh-key-2', url: 'https://github.com/SupunMunasinghe/SampleBuildTest.git'
+        //     }
+        // }
         
         stage('Build Debug') {
             steps {
