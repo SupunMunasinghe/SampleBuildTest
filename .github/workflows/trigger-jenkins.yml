@@ -69,8 +69,8 @@ jobs:
             echo "Build Status $STATUS"
             echo "Is Building $BUILDING"
 
-            if [[ "$BUILDING" == true ]]; then
-              echo "Build still running..."
+            if [[ "$BUILDING" == True ]]; then
+              echo "Build is still running..."
             elif [[ "$STATUS" == "SUCCESS" ]]; then
               echo "Jenkins build succeeded!"
               break
