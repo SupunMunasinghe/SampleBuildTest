@@ -29,8 +29,7 @@ jobs:
           sleep 3
           LATEST_BUILD=$(curl -u ${JENKINS_USERNAME}:${JENKINS_TOKEN} "${JENKINS_URL}/job/${JENKINS_JOB_NAME}/lastBuild/api/json")
           LATEST_BUILD_URL=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['url'])" "$LATEST_BUILD")
-          echo "Latest Build : $LATEST_BUILD"
-          echo "Latest Build URL : $LATEST_BUILD_URL"
+          echo "Latest Build URL in Jenkins job: $LATEST_BUILD_URL"
           echo "build_url=$LATEST_BUILD_URL" >> $GITHUB_OUTPUT
             
 
@@ -43,6 +42,7 @@ jobs:
 
           LATEST_BUILD=$(curl -u ${JENKINS_USERNAME}:${JENKINS_TOKEN} "${JENKINS_URL}/job/${JENKINS_JOB_NAME}/lastBuild/api/json")
           LATEST_BUILD_URL=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['url'])" "$LATEST_BUILD")
+          echo "Latest Build URL in Jenkins Waiting job: $LATEST_BUILD_URL"
           
           while true; do
             BUILD_INFO=$(curl -s -u ${JENKINS_USERNAME}:${JENKINS_TOKEN} \
