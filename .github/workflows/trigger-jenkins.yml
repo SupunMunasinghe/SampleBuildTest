@@ -106,6 +106,7 @@ jobs:
           echo "Posting build status to PR..."
           BUILD_CONSOLE_OUTPUT=$(curl -s -u ${JENKINS_USERNAME}:${JENKINS_TOKEN} \
             "${{ steps.trigger_status.outputs.build_url }}consoleText")
+          echo "Console Output : ${BUILD_CONSOLE_OUTPUT}"
           #Comment the consoleText in a comment
           PR_COMMENT_RESPONSE=$(curl -X POST   -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}"   \ 
