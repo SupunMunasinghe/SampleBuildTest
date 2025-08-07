@@ -38,7 +38,7 @@ jobs:
           echo "Waiting for Jenkins job to complete..."
           MAX_ATTEMPTS=10
           SLEEP_SECONDS=5
-          NEXT_BUILD_WAIT_SECONDS=1
+          NEXT_BUILD_WAIT_SECONDS=2
           COUNTER=0
 
           LATEST_BUILD=$(curl -u ${JENKINS_USERNAME}:${JENKINS_TOKEN} "${JENKINS_URL}/job/${JENKINS_JOB_NAME}/lastBuild/api/json")
@@ -57,7 +57,7 @@ jobs:
               echo "Next build is loading..."
             else
               echo "Next build has opened : $NEXT_BUILD"
-              LATEST_BUILD_URL=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['url'])" "$NEXT_BUILD")
+              LATEST_BUILD_URL=$(python3 -c "import sys; sys.argv[1]['url']" "$NEXT_BUILD")
               break
             fi
             sleep $NEXT_BUILD_WAIT_SECONDS
