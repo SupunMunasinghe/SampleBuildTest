@@ -49,6 +49,8 @@ jobs:
             BUILD_INFO=$(curl -s -u ${JENKINS_USERNAME}:${JENKINS_TOKEN} \
             "${LATEST_BUILD_URL}api/json")
 
+            echo "Next Build Build Info : $BUILD_INFO"
+
             NEXT_BUILD=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['nextBuild'])" "$BUILD_INFO")
             echo "Next Build $NEXT_BUILD"
 
