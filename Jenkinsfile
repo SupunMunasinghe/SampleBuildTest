@@ -1,5 +1,5 @@
 pipeline {
-    agent None
+    agent none
 
     parameters {
         string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Branch to build')
@@ -10,11 +10,22 @@ pipeline {
     }
 
     stages {
-
-        stage('Checkout Branch') {
-            steps {
-                echo "Building branch ${params.BRANCH_NAME}"
-                git branch: "${params.BRANCH_NAME}", credentialsId: 'github-ssh-key-2', url: 'https://github.com/SupunMunasinghe/SampleBuildTest.git'
+        stage('Checkout in both Linux and Windows') {
+            parallel {
+                stage('Checkout in Linux') {
+                    agent { label 'linux' }
+                    steps {
+                        echo "Building branch ${params.BRANCH_NAME}"
+                        git branch: "${params.BRANCH_NAME}", credentialsId: 'github-ssh-key-2', url: 'https://github.com/SupunMunasinghe/SampleBuildTest.git'
+                    }
+                }
+                stage('Checkout in Windows') {
+                    agent { label 'windows' }
+                    steps {
+                        echo "Building branch ${params.BRANCH_NAME}"
+                        git branch: "${params.BRANCH_NAME}", credentialsId: 'github-ssh-key-2', url: 'https://github.com/SupunMunasinghe/SampleBuildTest.git'
+                    }
+                }
             }
         }
 
@@ -22,6 +33,7 @@ pipeline {
             parallel {
                 stage('Build on Linux') {
                     agent { label 'linux' }
+                    stages {
 
                     stage('Build Debug') {
                         steps {
@@ -45,7 +57,7 @@ pipeline {
                             '''
                         }
                     }
-                    
+                    }   
                 }
 
                 stage('Build on Windows') {
