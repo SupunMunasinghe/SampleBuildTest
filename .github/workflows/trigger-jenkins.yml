@@ -109,7 +109,7 @@ jobs:
           #Comment the consoleText in a comment
           PR_COMMENT_RESPONSE=$(curl -X POST   -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}"   \ 
-            https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments   \
+            https://api.github.com/repos/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/comments   \
             -d '{"body":${BUILD_CONSOLE_OUTPUT}}')
 
           BUILD_STATUS=${{ steps.trigger_status.outputs.build_status }}
