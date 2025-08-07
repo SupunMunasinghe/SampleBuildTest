@@ -6,17 +6,19 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+    JENKINS_TOKEN: ${{ secrets.JENKINS_ACCESS_TOKEN }}
+    JENKINS_URL: http://localhost:8080
+    JENKINS_USERNAME: exvbuild
+    JENKINS_JOB_NAME: CMake_Build
+
 jobs:
   build:
     runs-on: self-hosted   # Runs on Jenkins server
     steps:
       - name: Trigger Jenkins Job
         id: trigger
-        env:
-            JENKINS_TOKEN: ${{ secrets.JENKINS_ACCESS_TOKEN }}
-            JENKINS_URL: http://localhost:8080
-            JENKINS_USERNAME: exvbuild
-            JENKINS_JOB_NAME: CMake_Build
+        
         run: |
           echo "Triggering Jenkins job from GitHub Actions..."
 
