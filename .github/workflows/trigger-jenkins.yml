@@ -57,7 +57,7 @@ jobs:
               echo "Next build is loading..."
             else
               echo "Next build has opened : $NEXT_BUILD"
-              LATEST_BUILD_URL=$(python3 -c "import sys; sys.argv[1]['url']" "$NEXT_BUILD")
+              LATEST_BUILD_URL=$(python3 -c "import sys; print(type(sys.argv[1]['url']))" "$NEXT_BUILD")
               break
             fi
             sleep $NEXT_BUILD_WAIT_SECONDS
