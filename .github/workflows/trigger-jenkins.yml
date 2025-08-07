@@ -26,9 +26,8 @@ jobs:
           curl -X POST \
           "${JENKINS_URL}/job/${JENKINS_JOB_NAME}/buildWithParameters?BRANCH_NAME=${{ github.head_ref }}" \
           --user "${JENKINS_USERNAME}:${JENKINS_TOKEN}"
-          LATEST_BUILD=$(curl -u ${JENKINS_USERNAME}:${JENKINS_TOKEN} "${JENKINS_URL}/job/${JENKINS_JOB_NAME}/api/json")
-          LATEST_BUILD_NUMBER=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['nextBuildNumber'])" "$LATEST_BUILD")
-          LATEST_BUILD_URL = "${JENKINS_URL}/job/${JENKINS_JOB_NAME}/${LATEST_BUILD_NUMBER}/"
+          LATEST_BUILD=$(curl -u ${JENKINS_USERNAME}:${JENKINS_TOKEN} "${JENKINS_URL}/job/${JENKINS_JOB_NAME}/lastBuild/api/json")
+          LATEST_BUILD_URL=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['url'])" "$LATEST_BUILD")
           echo "Latest Build : $LATEST_BUILD"
           echo "Latest Build URL : $LATEST_BUILD_URL"
           echo "build_url=$LATEST_BUILD_URL" >> $GITHUB_OUTPUT
