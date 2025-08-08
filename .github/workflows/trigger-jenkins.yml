@@ -5,12 +5,14 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-
+    types: [opened, synchronize, reopened]
+    
 env:
     JENKINS_TOKEN: ${{ secrets.JENKINS_ACCESS_TOKEN }}
     JENKINS_URL: http://localhost:8080
     JENKINS_USERNAME: exvbuild
     JENKINS_JOB_NAME: CMake_Build
+    GIT_PR_ACCESS_TOKEN : ${{ secrets.PR_ACCESSS_TOKEN }}
 
 jobs:
   build:
@@ -29,7 +31,8 @@ jobs:
           --user "${JENKINS_USERNAME}:${JENKINS_TOKEN}"
             
 
-      - name: Wait for Jenkins job to complete
+      - name: Wait for Jenkins Job To Complete
+        id: trigger_status
         run: |
           echo "Waiting for Jenkins job to complete..."
           MAX_ATTEMPTS=10
@@ -57,6 +60,7 @@ jobs:
             fi
             sleep $NEXT_BUILD_WAIT_SECONDS
           done
+          echo "build_url=$LATEST_BUILD_URL" >> $GITHUB_OUTPUT #set Latest Build URL in Github Output
 
           # Check the started build status
           while true; do
@@ -73,15 +77,19 @@ jobs:
               echo "Build is still running..."
             elif [[ "$STATUS" == "SUCCESS" ]]; then
               echo "Jenkins build succeeded!"
+              echo "build_status=$STATUS" >> $GITHUB_OUTPUT #set Latest Build Status in Github Output
               break
             elif [[ "$STATUS" == "FAILURE" ]]; then
               echo "Jenkins build failed!"
-              exit 1
+              echo "build_status=$STATUS" >> $GITHUB_OUTPUT #set Latest Build Status in Github Output
+              break
             elif [[ "$STATUS" == "ABORTED" ]]; then
               echo "Jenkins build aborted!"
-              exit 1
+              echo "build_status=$STATUS" >> $GITHUB_OUTPUT #set Latest Build Status in Github Output
+              break
             else
               echo "Unknown status: $STATUS"
+              exit 1
             fi
           
             COUNTER=$((COUNTER+1))
@@ -93,8 +101,33 @@ jobs:
             sleep $SLEEP_SECONDS
           done
 
-      - name: Notify GitHub PR (optional)
+      - name: Notify GitHub PR
         if: ${{ github.event_name == 'pull_request' }}
         run: |
           echo "Posting build status to PR..."
-          # You can use GitHub CLI or API here to comment on PR
+
+          #Call Jenkins Console output and write it in console.txt
+          BUILD_CONSOLE_OUTPUT=$(curl -s -u ${JENKINS_USERNAME}:${JENKINS_TOKEN} \
+            "${{ steps.trigger_status.outputs.build_url }}consoleText" > console.txt)
+          COMMENT_BODY=$(printf "**Jenkins Build Console Output (truncated)**\n\n%s" "$(head -n 1000 console.txt)")
+
+          # Escape backslashes, double quotes, and newlines for JSON
+          JSON_BODY=$(printf '%s' "$COMMENT_BODY" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')
+
+          #echo "Console Output : ${BUILD_CONSOLE_OUTPUT}"
+          #Comment the consoleText in a comment
+          COMMENT_COMMAND=$(curl -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
+            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
+            -d "{\"body\":$JSON_BODY}")
+
+          BUILD_STATUS=${{ steps.trigger_status.outputs.build_status }}
+          echo "Build Status : ${BUILD_STATUS}"
+          if [[ "$BUILD_STATUS" != "SUCCESS" ]]; then
+            ## Comment on PR with build authorized users
+            exit 1
+          fi
+
+
+          
