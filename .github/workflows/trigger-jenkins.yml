@@ -125,6 +125,8 @@ jobs:
 
           BUILD_STATUS=${{ steps.trigger_status.outputs.build_status }}
           echo "Build Status : ${BUILD_STATUS}"
+          if [[ "$STATUS" != "SUCCESS" ]]; then
+            exit 1
 
 
           
