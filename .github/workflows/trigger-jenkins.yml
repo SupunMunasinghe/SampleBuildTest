@@ -110,7 +110,7 @@ jobs:
           echo "Posting build status to PR..."
           BUILD_CONSOLE_OUTPUT=$(curl -s -u ${JENKINS_USERNAME}:${JENKINS_TOKEN} \
             "${{ steps.trigger_status.outputs.build_url }}consoleText" > console.txt)
-          COMMENT_BODY="Jenkins build console output (truncated):\n\n$(head -n 1000 console.txt)"
+          COMMENT_BODY=$(printf "**Jenkins Build Console Output (truncated)**\n\n%s" "$(head -n 1000 console.txt)")
 
           # Escape backslashes, double quotes, and newlines for JSON
           JSON_BODY=$(printf '%s' "$COMMENT_BODY" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')
