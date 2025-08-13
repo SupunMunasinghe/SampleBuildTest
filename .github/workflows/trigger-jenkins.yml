@@ -140,6 +140,9 @@ jobs:
 
               IS_MERGEABLE=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['mergeable'])" "$MERGEBLE_COMMAND")
 
+              echo "Mergeable Response : ${MERGEBLE_COMMAND}"
+              echo "Is Mergeable Value : ${IS_MERGEABLE}"
+
               if [[ "$IS_MERGEABLE" == None ]]; then
                 echo "Still Checking Mergeable..."
               elif [[ "$IS_MERGEABLE" == false ]]; then
@@ -153,6 +156,10 @@ jobs:
               elif [[ "$IS_MERGEABLE" == true ]]; then
                 echo "Merge checking is succeeded"
                 break
+              else
+                echo "Unknown Response"
+                break
+                exit 1
               fi
 
               sleep 1 #1 second sleep
