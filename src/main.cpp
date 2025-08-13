@@ -9,11 +9,15 @@
 #include "player.h"
 
 int main() {
-    std::srand(std::time(0));
+    std::srand(std::time(0))
 
     std::cout << "Welcome to the Casino Number Guessing Game!" << std::endl;
 
     bool isNonInteractive = (std::getenv("JENKINS_HOME") != nullptr);
+
+
+
+
 
     std::string playerName;
     int difficulty;
