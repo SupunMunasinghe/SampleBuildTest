@@ -113,7 +113,6 @@ jobs:
 
           # Escape backslashes, double quotes, and newlines for JSON. Remove '>' and '+' characters from log
           JSON_BODY=$(printf '%s' "$COMMENT_BODY" | python3 -c 'import json,sys; remove_chars=set(">+"); s=json.dumps(sys.stdin.read()); s="".join(ch for ch in s if ch not in remove_chars); print(s)')
-          echo "JSON Body : ${JSON_BODY}"
 
           #echo "Console Output : ${BUILD_CONSOLE_OUTPUT}"
           #Comment the consoleText in a comment
@@ -139,9 +138,7 @@ jobs:
                 https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }})
 
               IS_MERGEABLE=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['mergeable'])" "$MERGEBLE_COMMAND")
-              TEST_AUTO_MERGE=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['milestone'])" "$MERGEBLE_COMMAND")
-
-              echo "Null Value Test : ${TEST_AUTO_MERGE}"
+              
 
               if [[ "$IS_MERGEABLE" == None ]]; then
                 echo "Still Checking Mergeable..."
@@ -165,12 +162,13 @@ jobs:
               sleep 1 #1 second sleep
             done
             
-
+            echo "Calling Merge Command"
             MERGE_COMMAND=$(curl -X PUT \
               -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
               -H "Accept: application/vnd.github+json" \
               https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/merge \
               -d '{"merge_method":"merge"}')
+            echo "Merge Response ${MERGE_COMMAND}"
           fi
 
 
