@@ -72,7 +72,7 @@ pipeline {
                         mkdir %BUILD_DIR_DEBUG%
                         cd %BUILD_DIR_DEBUG%
                         cmake .. -G "Visual Studio 16 2019" -A x64
-                        cmake --build . --config Debug
+                        cmake --build . --config Debug 
                         '''
                     }
                 }
