@@ -131,11 +131,39 @@ jobs:
             exit 1
           else
             ## Merge the pull request automatically
-            MERGE_COMMAND=$(curl -X PATCH \
+
+            #Check pull request is mergable
+            while true;do
+              MERGEBLE_COMMAND=$(curl -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
+                -H "Accept: application/vnd.github+json" \
+                https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }})
+
+              IS_MERGEABLE=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['mergeable'])" "$MERGEBLE_COMMAND")
+
+              if [[ "$IS_MERGEABLE" == None ]]; then
+                echo "Still Checking Mergeable..."
+              elif [[ "$IS_MERGEABLE" == false ]]; then
+                COMMENT_ON_MERGE_FAIL=$(curl -X POST \
+                -H "Accept: application/vnd.github+json" \
+                -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
+                "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
+                -d '{"body":"Unable to merge pull request automatically. Please review manually."}')
+                break
+                exit 1
+              elif [[ "$IS_MERGEABLE" == true ]]; then
+                echo "Merge checking is succeeded"
+                break
+              fi
+
+              sleep 1 #1 second sleep
+            done
+            
+
+            MERGE_COMMAND=$(curl -X PUT \
               -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
               -H "Accept: application/vnd.github+json" \
-              https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }} \
-            -d '{"state":"closed"}')
+              https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/merge \
+              -d '{"merge_method":"merge"}')
           fi
 
 
