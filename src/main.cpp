@@ -15,6 +15,8 @@ int main() {
 
     bool isNonInteractive = (std::getenv("JENKINS_HOME") != nullptr);
 
+
+
     
 
     std::string playerName;
