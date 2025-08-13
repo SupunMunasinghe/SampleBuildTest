@@ -2,6 +2,7 @@
 #define PLAYER_H
 
 #include <string>
+#include <windows.h>
 
 class Player {
 private:
@@ -13,4 +14,4 @@ public:
     float getTotalWinnings();
 };
 
-#endi
+#endif
