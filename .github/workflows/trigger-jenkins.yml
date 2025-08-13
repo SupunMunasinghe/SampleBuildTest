@@ -139,13 +139,13 @@ jobs:
                 https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }})
 
               IS_MERGEABLE=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['mergeable'])" "$MERGEBLE_COMMAND")
+              TEST_AUTO_MERGE=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['milestone'])" "$MERGEBLE_COMMAND")
 
-              echo "Mergeable Response : ${MERGEBLE_COMMAND}"
-              echo "Is Mergeable Value : ${IS_MERGEABLE}"
+              echo "Null Value Test : ${TEST_AUTO_MERGE}"
 
               if [[ "$IS_MERGEABLE" == None ]]; then
                 echo "Still Checking Mergeable..."
-              elif [[ "$IS_MERGEABLE" == false ]]; then
+              elif [[ "$IS_MERGEABLE" == False ]]; then
                 COMMENT_ON_MERGE_FAIL=$(curl -X POST \
                 -H "Accept: application/vnd.github+json" \
                 -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
@@ -153,7 +153,7 @@ jobs:
                 -d '{"body":"Unable to merge pull request automatically. Please review manually."}')
                 break
                 exit 1
-              elif [[ "$IS_MERGEABLE" == true ]]; then
+              elif [[ "$IS_MERGEABLE" == True ]]; then
                 echo "Merge checking is succeeded"
                 break
               else
