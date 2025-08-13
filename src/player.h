@@ -13,4 +13,4 @@ public:
     float getTotalWinnings();
 };
 
-#endif
+#endi
