@@ -12,28 +12,15 @@ pipeline {
     //Main Stages
     stages {
 
-        //Checkout Branches in both Linux and Windows
-        stage('Checkout in both Linux and Windows in Parellel') {
-            parallel {
-                stage('Checkout in Linux') {
-                    agent { label 'linux' }
-                    steps {
-                        echo "Building branch ${params.BRANCH_NAME}"
-                        git branch: "${params.BRANCH_NAME}", credentialsId: 'github-ssh-key-2', url: 'https://github.com/SupunMunasinghe/SampleBuildTest.git'
-                    }
-                }
-                stage('Checkout in Windows') {
-                    agent { label 'windows' }
-                    steps {
-                        echo "Building branch ${params.BRANCH_NAME}"
-                        git branch: "${params.BRANCH_NAME}", credentialsId: 'github-ssh-key-2', url: 'https://github.com/SupunMunasinghe/SampleBuildTest.git'
-                    }
-                }
+        //Checkout Branch Linux
+        stage('Checkout in Linux') {
+            agent { label 'linux' }
+            steps {
+                echo "**Linux : Checkout branch ${params.BRANCH_NAME}**"
+                git branch: "${params.BRANCH_NAME}", credentialsId: 'github-ssh-key-2', url: 'https://github.com/SupunMunasinghe/SampleBuildTest.git'
             }
         }
 
-        //Sequential build on both Windows and Linux
-        
         //Debug and Release Build on Linux
         stage('Build on Linux') {
             agent { label 'linux' }
@@ -41,7 +28,7 @@ pipeline {
 
             stage('Build Debug') {
                 steps {
-                    echo "Building branch ${params.BRANCH_NAME}"
+                    echo "**Linux : Debug Mode : Building branch ${params.BRANCH_NAME}**"
                     sh '''
                         mkdir -p ${BUILD_DIR_DEBUG}
                         cd ${BUILD_DIR_DEBUG}
@@ -53,6 +40,7 @@ pipeline {
 
             stage('Build Release') {
                 steps {
+                    echo "**Linux : Release Mode : Building branch ${params.BRANCH_NAME}**"
                     sh '''
                         mkdir -p ${BUILD_DIR_RELEASE}
                         cd ${BUILD_DIR_RELEASE}
@@ -64,12 +52,22 @@ pipeline {
             }   
         }
 
+        //Checkout Branch Windows
+        stage('Checkout in Windows') {
+            agent { label 'windows' }
+            steps {
+                echo "**Windows : Checkout branch ${params.BRANCH_NAME}**"
+                git branch: "${params.BRANCH_NAME}", credentialsId: 'github-ssh-key-2', url: 'https://github.com/SupunMunasinghe/SampleBuildTest.git'
+            }
+        }    
+
         //Debug and Release Build on Linux
         stage('Build on Windows') {
             agent { label 'windows' }
             stages{
                 stage('Build Debug'){
                     steps {
+                        echo "**Windows : Debug Mode : Building branch ${params.BRANCH_NAME}**"
                         bat '''
                         mkdir %BUILD_DIR_DEBUG%
                         cd %BUILD_DIR_DEBUG%
@@ -80,12 +78,13 @@ pipeline {
                 }
                 stage('Build Release'){
                     steps {
+                        echo "**Windows : Release Mode : Building branch ${params.BRANCH_NAME}**"
                         bat '''
                         mkdir %BUILD_DIR_RELEASE%
                         cd %BUILD_DIR_RELEASE%
                         cmake .. -G "Visual Studio 16 2019" -A x64
                         cmake --build . --config Release
-                        
+
                         '''
                     }
                     
