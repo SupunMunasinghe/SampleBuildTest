@@ -130,49 +130,54 @@ jobs:
           if [[ "$BUILD_STATUS" != "SUCCESS" ]]; then
             ## Comment on PR with build authorized users
             exit 1
-          else
-            ## Merge the pull request automatically
-
-            #Check pull request is mergable
-            while true;do
-              MERGEBLE_COMMAND=$(curl -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
-                -H "Accept: application/vnd.github+json" \
-                https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }})
-
-              IS_MERGEABLE=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['mergeable'])" "$MERGEBLE_COMMAND")
-              
-
-              if [[ "$IS_MERGEABLE" == None ]]; then
-                echo "Still Checking Mergeable..."
-              elif [[ "$IS_MERGEABLE" == False ]]; then
-                COMMENT_ON_MERGE_FAIL=$(curl -X POST \
-                -H "Accept: application/vnd.github+json" \
-                -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
-                "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
-                -d '{"body":"Unable to merge pull request automatically. Please review manually."}')
-                break
-                exit 1
-              elif [[ "$IS_MERGEABLE" == True ]]; then
-                echo "Merge checking is succeeded"
-                break
-              else
-                echo "Unknown Response"
-                break
-                exit 1
-              fi
-
-              sleep 1 #1 second sleep
-            done
-            
-            echo "Calling Merge Command"
-            MERGE_COMMAND=$(curl -X PUT \
-              -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
-              -H "Accept: application/vnd.github+json" \
-              -H "X-GitHub-Api-Version: 2022-11-28" \
-              https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/merge \
-              -d '{"commit_title":"Merge PR ${{ github.event.pull_request.number }}","commit_message":"Merged the PR ${{ github.event.pull_request.number }} merge_method merge"}')
-            echo "Merge Response ${MERGE_COMMAND}"
           fi
+
+  merge_pr:
+    runs-on: self-hosted   # Runs on Jenkins server
+    steps:
+      - name: Merge PR
+        run: |
+          ## Merge the pull request automatically
+
+          #Check pull request is mergable
+          while true;do
+            MERGEBLE_COMMAND=$(curl -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }})
+
+            IS_MERGEABLE=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['mergeable'])" "$MERGEBLE_COMMAND")
+            
+
+            if [[ "$IS_MERGEABLE" == None ]]; then
+              echo "Still Checking Mergeable..."
+            elif [[ "$IS_MERGEABLE" == False ]]; then
+              COMMENT_ON_MERGE_FAIL=$(curl -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
+              "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
+              -d '{"body":"Unable to merge pull request automatically. Please review manually."}')
+              break
+              exit 1
+            elif [[ "$IS_MERGEABLE" == True ]]; then
+              echo "Merge checking is succeeded"
+              break
+            else
+              echo "Unknown Response"
+              break
+              exit 1
+            fi
+
+            sleep 1 #1 second sleep
+          done
+          
+          echo "Calling Merge Command"
+          MERGE_COMMAND=$(curl -X PUT \
+            -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/merge \
+            -d '{"commit_title":"Merge PR ${{ github.event.pull_request.number }}","commit_message":"Merged the PR ${{ github.event.pull_request.number }} merge_method merge"}')
+          echo "Merge Response ${MERGE_COMMAND}"
 
 
           
