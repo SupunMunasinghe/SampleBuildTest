@@ -12,7 +12,9 @@ env:
     JENKINS_URL: http://localhost:8080
     JENKINS_USERNAME: exvbuild
     JENKINS_JOB_NAME: CMake_Build
-    GIT_PR_ACCESS_TOKEN : ${{ secrets.PR_ACCESSS_TOKEN }}
+    #GIT_PR_ACCESS_TOKEN : ${{ secrets.PR_ACCESSS_TOKEN }}
+    GIT_PR_ACCESS_TOKEN : ${{ secrets.PR_CLASSIC_ACCESS_TOKEN }}
+    
 
 jobs:
   build:
