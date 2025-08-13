@@ -166,8 +166,9 @@ jobs:
             MERGE_COMMAND=$(curl -X PUT \
               -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
               -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
               https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/merge \
-              -d '{"merge_method":"merge"}')
+              -d '{"commit_title":"Merge PR ${{ github.event.pull_request.number }}","commit_message":"Merged the PR ${{ github.event.pull_request.number }} merge_method merge"}')
             echo "Merge Response ${MERGE_COMMAND}"
           fi
 
