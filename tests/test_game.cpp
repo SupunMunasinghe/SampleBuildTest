@@ -2,6 +2,8 @@
 #include "../src/game.h"
 #include <cassert>
 
+#include <windows.h>
+
 void testGame() {
     Game game(1); // Easy difficulty
 
