@@ -112,7 +112,8 @@ jobs:
           COMMENT_BODY=$(printf "**Jenkins Build Console Output (truncated)**\n\n%s" "$(head -n 1000 console.txt)")
 
           # Escape backslashes, double quotes, and newlines for JSON
-          JSON_BODY=$(printf '%s' "$COMMENT_BODY" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')
+          JSON_BODY=$(printf '%s' "$COMMENT_BODY" | python3 -c 'import json,sys; remove_chars=set(">+"); s=json.dumps(sys.stdin.read()); s="".join(ch for ch in s if ch not in remove_chars); print(s)')
+          echo "JSON Body : ${JSON_BODY}"
 
           #echo "Console Output : ${BUILD_CONSOLE_OUTPUT}"
           #Comment the consoleText in a comment
