@@ -201,6 +201,7 @@ jobs:
               "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
               -d '{"body":"Unable to merge pull request automatically. Please review manually."}')  
             exit 1
+          fi
 
           
 
