@@ -157,6 +157,7 @@ jobs:
             
 
             if [[ "$IS_MERGEABLE" == None ]]; then
+              echo "Still Checking Mergeable..."
             elif [[ "$IS_MERGEABLE" == False ]]; then
               COMMENT_ON_MERGE_FAIL=$(curl -X POST \
                 -H "Accept: application/vnd.github+json" \
