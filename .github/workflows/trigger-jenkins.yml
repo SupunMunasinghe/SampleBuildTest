@@ -193,7 +193,7 @@ jobs:
                 -H "Accept: application/vnd.github+json" \
                 -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
                 "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
-                -d '{"body":"Hi @${PR_USER_NAME}, your pull request has successfully merged!"}')
+                -d "{\"body\": \"Hi @$PR_USER_NAME, your pull request has successfully merged!\"}")
           else
             echo "Failed in PR merging"
             COMMENT_ON_MERGE_FAIL=$(curl -X POST \
