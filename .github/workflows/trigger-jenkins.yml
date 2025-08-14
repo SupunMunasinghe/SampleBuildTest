@@ -134,6 +134,7 @@ jobs:
 
   merge_pr:
     runs-on: self-hosted   # Runs on Jenkins server
+    needs: build
     steps:
       - name: Merge PR
         run: |
