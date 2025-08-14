@@ -120,6 +120,7 @@ jobs:
           #Comment the consoleText in a comment
           COMMENT_COMMAND=$(curl -X POST \
             -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
             -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
             "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
             -d "{\"body\":$JSON_BODY}")
@@ -132,6 +133,7 @@ jobs:
             PR_AUTH_USERS=$(printf '%s' "$GIT_PR_AUTHORIZE_USERS" | python3 -c 'import sys; users=[u.strip() for u in sys.stdin.read().strip().split(",")]; print(", ".join("@" + u for u in users))')
             COMMENT_ON_PR_BUILD_FAIL=$(curl -X POST \
                 -H "Accept: application/vnd.github+json" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
                 -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
                 "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
                 -d "{\"body\": \"Build has FAILED. $PR_AUTH_USERS, Please review the PR!\"}")
@@ -151,6 +153,7 @@ jobs:
           while true;do
             MERGEBLE_COMMAND=$(curl -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
               -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
               https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }})
 
             IS_MERGEABLE=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['mergeable'])" "$MERGEBLE_COMMAND")
@@ -162,6 +165,7 @@ jobs:
               COMMENT_ON_MERGE_FAIL=$(curl -X POST \
                 -H "Accept: application/vnd.github+json" \
                 -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
                 "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
                 -d '{"body":"Unable to merge pull request automatically. Please review manually."}')
               break
@@ -192,6 +196,7 @@ jobs:
               #Comment With user name 
               MERGE_GET_USER_COMMAND=$(curl -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
                 -H "Accept: application/vnd.github+json" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
                 https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }})
 
               PR_USER_NAME=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['user']['login'])" "$MERGE_GET_USER_COMMAND")
@@ -199,18 +204,15 @@ jobs:
               COMMENT_ON_MERGE_SUCCESS=$(curl -X POST \
                 -H "Accept: application/vnd.github+json" \
                 -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
                 "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
                 -d "{\"body\": \"Hi @$PR_USER_NAME, your pull request has successfully merged!\"}")
           else
             COMMENT_ON_MERGE_FAIL=$(curl -X POST \
               -H "Accept: application/vnd.github+json" \
               -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
               "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
               -d '{"body":"Unable to merge pull request automatically. Please review manually."}')  
             exit 1
-          fi
-
-          
-
-
-          
+          fi   
