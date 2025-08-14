@@ -152,10 +152,10 @@ jobs:
               echo "Still Checking Mergeable..."
             elif [[ "$IS_MERGEABLE" == False ]]; then
               COMMENT_ON_MERGE_FAIL=$(curl -X POST \
-              -H "Accept: application/vnd.github+json" \
-              -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
-              "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
-              -d '{"body":"Unable to merge pull request automatically. Please review manually."}')
+                -H "Accept: application/vnd.github+json" \
+                -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
+                "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
+                -d '{"body":"Unable to merge pull request automatically. Please review manually."}')
               break
               exit 1
             elif [[ "$IS_MERGEABLE" == True ]]; then
@@ -178,6 +178,31 @@ jobs:
             https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/merge \
             -d '{"merge_method":"merge"}')
           echo "Merge Response ${MERGE_COMMAND}"
+
+          IS_MERGE_SUCCESS=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['merged'])" "$MERGE_COMMAND")
+          if [[ "$IS_MERGE_SUCCESS" == True ]]; then
+              #Comment With user name 
+              MERGE_GET_USER_COMMAND=$(curl -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
+                -H "Accept: application/vnd.github+json" \
+                https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }})
+
+              PR_USER_NAME=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['user']['login'])" "$MERGE_GET_USER_COMMAND")
+
+              COMMENT_ON_MERGE_SUCCESS=$(curl -X POST \
+                -H "Accept: application/vnd.github+json" \
+                -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
+                "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
+                -d '{"body":"Hi @${PR_USER_NAME}, your pull request has successfully merged!"}')
+          else
+            echo "Failed in PR merging"
+            COMMENT_ON_MERGE_FAIL=$(curl -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
+              "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
+              -d '{"body":"Unable to merge pull request automatically. Please review manually."}')  
+            exit 1
+
+          
 
 
           
