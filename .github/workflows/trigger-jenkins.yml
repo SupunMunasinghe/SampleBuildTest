@@ -187,12 +187,13 @@ jobs:
                 https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }})
 
               PR_USER_NAME=$(python3 -c "import sys, json; print(json.loads(sys.argv[1])['user']['login'])" "$MERGE_GET_USER_COMMAND")
+              echo "PR User Name : ${PR_USER_NAME}"
 
               COMMENT_ON_MERGE_SUCCESS=$(curl -X POST \
                 -H "Accept: application/vnd.github+json" \
                 -H "Authorization: Bearer ${GIT_PR_ACCESS_TOKEN}" \
                 "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
-                -d '{"body":"Hi @${PR_USER_NAME}, your pull request has successfully merged!"}')
+                -d '{"body":"Hi @${{PR_USER_NAME}}, your pull request has successfully merged!"}')
           else
             echo "Failed in PR merging"
             COMMENT_ON_MERGE_FAIL=$(curl -X POST \
