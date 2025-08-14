@@ -131,7 +131,7 @@ jobs:
           if [[ "$BUILD_STATUS" != "SUCCESS" ]]; then
             ## Comment on PR with build authorized users
             echo "Build is failed!"
-            PR_AUTH_USERS=$(printf '%s' "$GIT_PR_AUTHORIZE_USERS" | python3 -c 'import sys; users=[u.strip() for u in sys.stdin.read().strip().split(",")]; print(",".join("@" + u for u in users))')
+            PR_AUTH_USERS=$(printf '%s' "$GIT_PR_AUTHORIZE_USERS" | python3 -c 'import sys; users=[u.strip() for u in sys.stdin.read().strip().split(",")]; print(", ".join("@" + u for u in users))')
             echo "PR Auth Users ${PR_AUTH_USERS}"
             COMMENT_ON_PR_BUILD_FAIL=$(curl -X POST \
                 -H "Accept: application/vnd.github+json" \
