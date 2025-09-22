@@ -11,7 +11,7 @@
 int main() {
     std::srand(std::time(0));
 
-    std::cout << "Welcome to the Casino Number Guessing Game!" << std::endl
+    std::cout << "Welcome to the Casino Number Guessing Game!" << std::endl;
     //
     //
 
