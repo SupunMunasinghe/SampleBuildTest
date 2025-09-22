@@ -13,6 +13,7 @@ int main() {
 
     std::cout << "Welcome to the Casino Number Guessing Game!" << std::endl;
     //
+    //
 
     bool isNonInteractive = (std::getenv("JENKINS_HOME") != nullptr);
 
